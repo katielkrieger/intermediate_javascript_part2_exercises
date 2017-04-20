@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Favorites</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+  </style>
+</head>
+<body>
+    <h1 class="header text-center">My Favorite Books</h1>
+    <section class="container-fluid">
+      <form class="form-inline" action="#">
+        <div class="form-group col-xs-3">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" placeholder="Book Title">
+        </div>
+        <div class="form-group col-xs-6">
+          <label for="rating">Rating</label>
+          <input type="text" class="form-control" id="rating" placeholder="0 to 10">
+        </div>
+        <div class="col-xs-3">
+          <button type="submit" class="btn btn-default pull-right">Add Book
+          </button>
+        </div>
+      </form>
+    </section>
+    <hr>
+    <section class="container-fluid text-center">
+      <div>
+        <table class="table table-bordered col-xs-12">
+          <thead>
+              <tr>
+                  <th class="col-xs-8 text-center">Title</th>
+                  <th class="col-xs-2 text-center">Rating</th>
+                  <th class="col-xs-2 text-center">Delete</th>
+              </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script>
+      $(document).ready(function(){
+
+        // bring list in from localStorage if applicable
+
+        var listObj = JSON.parse(localStorage.getItem("currentList"));
+        var oldCounter = localStorage.getItem("maxCount");
+        var $form = $("form");
+        var $tbody = $("tbody");
+
+        if(Object.keys(listObj).length > 0) {
+
+          var counter = oldCounter;
+          for (key in listObj) {
+            if(listObj[key] !== null) {
+
+              var $oldTR = $("<tr>");
+              $tbody.append($oldTR);
+              var $oldTitle = $("<td>")
+                .text(listObj[key].title)
+                .attr("ID", key);
+              $oldTR.append($oldTitle);
+              var $oldRating = $("<td>")
+                .text(listObj[key].rating)
+                .attr("ID", key);
+              $oldTR.append($oldRating);
+              var $oldDelete = $("<td>")
+                .attr("ID", key);
+              var $oldDeleteSpan = $("<span>")
+                .attr("type", "button")
+                .attr("class", "btn btn-danger")
+                .text("Delete")
+                .attr("ID", key);
+              $oldTR.append($oldDelete);
+              $oldDelete.append($oldDeleteSpan);
+            }
+          }
+
+          
+        } else {
+          listObj = {};
+          var counter = -1;
+        }
+
+        // add a new item
+
+
+        var counter = 0;
+
+
+        $form.on("submit", function(event){
+          counter++;
+          if ($("#title").val() === undefined) {
+            $form.preventDefault();
+          } else {
+            var $newTR = $("<tr>");
+            $tbody.append($newTR);
+
+            var $newTitle = $("<td>") 
+            .text($("#title").val())
+            .attr("ID", counter);
+            $newTR.append($newTitle);
+
+            var $newRating = $("<td>")
+            .text($("#rating").val())
+            .attr("ID", counter);
+            $newTR.append($newRating);
+
+            var $newDelete = $("<td>")
+              .attr("ID", counter);
+            var $newDeleteSpan = $("<span>")
+              .attr("type", "button")
+              .attr("class", "btn btn-danger")
+              .text("Delete")
+              .attr("ID", counter);
+            $newTR.append($newDelete);
+            $newDelete.append($newDeleteSpan);
+
+
+            listObj[counter] = {
+              title: $("#title").val(),
+              rating: $("#rating").val()
+            };
+            
+            localStorage.setItem("currentList", JSON.stringify(listObj));
+            localStorage.setItem("maxCount", counter);
+            $form.trigger("reset");
+          }
+        });
+
+        // remove an item
+        
+        $tbody.on("click", "tr", function(event){
+          var $id = $(event.target).attr("ID");
+          $("tr").has($("td").has($(event.target))).remove();
+          delete listObj[$id];
+          localStorage.setItem("currentList", JSON.stringify(listObj));
+        });
+
+      });
+</script>
+</body>
+</html>

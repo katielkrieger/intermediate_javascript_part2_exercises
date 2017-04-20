@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To Do App</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+    .disabled {
+      text-decoration: line-through;
+    }
+
+  </style>
+</head>
+<body>
+    <h1 class="header text-center">To Do</h1>
+    <section class="container">
+      <form class="form" action="#">
+        <div class="form-group">
+            <label for="todo">What do you have to do today?</label>
+            <input type="text" class="form-control" id="todo" placeholder="Buy milk">
+        </div>
+        <button type="submit" class="btn btn-default pull-right">Submit
+        </button>
+      </form>
+    </section>
+    <hr>
+    <section class="container class-group">
+      <ul class="col-xs-12">
+      </ul>
+    </section>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script>
+      $(document).ready(function(){
+
+        // bring list in from localStorage if applicable
+
+        var listArr = JSON.parse(localStorage.getItem("currentList"));
+        var $form = $("form");
+        var $list = $("ul");
+        var $span = $("<span>");
+
+        if(listArr.length > 0) {
+
+
+
+          for (var i=0; i<listArr.length; i++) {
+            var $oldToDo = $("<li>")
+              .text(listArr[i].todo)
+              .addClass("list-group-item")
+              .attr("ID", i);
+            if(listArr[i].done) {
+              $oldToDo.attr("class", "list-group-item disabled");
+            } else {
+              $oldToDo.attr("class", "list-group-item")
+            }
+            $list.append($oldToDo);
+          }
+        } else {
+          listArr = [];
+        }
+
+        var counter = listArr.length;
+
+        // add a new To Do item
+
+        $form.on("submit", function(event){
+          var $newToDo = $("<li>")
+            .text($("form div input").val())
+            .attr("class", "list-group-item")
+            .attr("done", "false")
+            .attr("ID", counter);
+          counter++;
+          if ($("form div input").val() === undefined) {
+            $form.preventDefault();
+          } else {
+            $list.append($newToDo);
+            listArr.push({
+              todo: $("form div input").val(),
+              done: false
+            });
+            localStorage.setItem("currentList", JSON.stringify(listArr));
+            $form.trigger("reset");
+          }
+        });
+
+        // mark an item as completed
+
+        $list.on("click", "li", function(event){
+          if ($(event.target).attr("class") === "list-group-item") {
+            $(event.target).attr("class", "list-group-item disabled");
+            for (var i=0; i<listArr.length; i++) {
+              if(listArr[i].todo === $(event.target).text()) {
+                listArr[i].done = true;
+              }
+            }
+          } else {
+            $(event.target).attr("class", "list-group-item");
+            for (var i=0; i<listArr.length; i++) {
+              if(listArr[i].todo === $(event.target).text()) {
+                listArr[i].done = false;
+              }
+            }
+          }
+          localStorage.setItem("currentList", JSON.stringify(listArr));
+        });
+
+        // remove an item
+
+        $list.on("mouseenter", "li", function(event){
+          $span.attr("class", "glyphicon glyphicon-remove pull-right");
+          $(event.target).append($span);
+        });
+
+        $list.on("mouseleave", "li", function(event){
+          if($span.attr("class") === "glyphicon glyphicon-remove pull-right") {
+            $span.remove();
+          }
+        });
+        
+        $list.on("click", "span", function(event){
+          $(event.target).parent().remove();
+          var id = $(event.target).parent().attr("ID");
+          listArr.splice(id,1);
+          localStorage.setItem("currentList", JSON.stringify(listArr));
+        });
+
+      });
+</script>
+</body>
+</html>
