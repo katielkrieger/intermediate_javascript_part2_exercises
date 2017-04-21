@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>NYT History</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet" integrity="sha384-HzUaiJdCTIY/RL2vDPRGdEQHHahjzwoJJzGUkYjHVzTwXFQ2QN/nVgX7tzoMW3Ov" crossorigin="anonymous">
+  <style>
+    .top {
+      background-color: #E0EAFF;
+      padding-top: 0.5rem;
+    }
+    .clipping {
+      margin-top: 4rem;
+    }
+
+  </style>
+</head>
+<body>
+    <section class="top">
+      <h1 class="header text-center">Looking back through the New York Times</h1>
+      <h2 class="header text-center">What was the first thing written about _________ ?</h2>
+      <article class="container">
+        <div class="row">
+          <form class="form" action="#">
+            <div class="form-group">
+              <label class="sr-only" for="title">Search Item</label>
+              <div class="col-xs-12 col-sm-4 col-sm-offset-2">
+                <input type="text" class="form-control" id="search" placeholder="Ex: Yosemite, Barack Obama, or the Titanic...">
+              </div>
+              <div class="col-xs-12 col-sm-2">
+                <button type="submit" class="btn btn-primary search" value="headlines">Search NYT headlines
+                </button>
+              </div>
+              <div class="col-xs-12 col-sm-2">
+                <button type="submit" class="btn btn-default search" value="all">Search all of the NYT
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </article>
+      <hr>
+    </section>
+    <section class="container">
+      <div class="row clipping">
+        <div class="col-xs-10 col-xs-offset-1 holder">
+          <div class="newClipping">
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script>
+      $(document).ready(function(){
+
+        // add a new item
+
+        var $form = $("form");
+        var $buttons = $(".search");
+        var $clippings = $(".clippings");
+        var $remove = $(".remove");
+
+        $buttons.on("click", function(event){
+
+          // either headlines or all: ($(this).attr("value"));
+
+          var searchText = $('#search').val();
+          var searchArr = searchText.trim().split(" ");
+          var fq = "";
+
+          if($(this).attr("value") === "headlines"){
+            for(var i=0; i<searchArr.length; i++){
+              if(i===0){
+                fq = fq + 'headline.search:("' + searchArr[i] + '")';
+              } else {
+                fq = fq + ' AND headline.search:("' + searchArr[i] + '")';
+              }
+            }
+          } else {
+            for(var i=0; i<searchArr.length; i++){
+              if(i===0){
+                fq = fq + searchArr[i];
+              } else {
+                fq = fq + ' AND ' + searchArr[i];
+              }
+            }
+          }
+          
+
+          var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+          url += '?' + $.param({
+            'api-key': "3baa47a8549145ffb79ca653ab42a969",
+            'fq': fq,
+            'begin_date': "19000101",
+            'end_date': "20170420",
+            'sort': "oldest",
+            'page': 1,
+          });
+          $.ajax({
+            url: url,
+            method: 'GET',
+          }).done(function(result) {
+            console.log(result);
+          }).fail(function(err) {
+            throw err;
+          }).then(function(response){
+            
+
+              var $holder = $(".holder")
+              var $newClipping = $(".newClipping");
+              var $newBold = $("<b>");
+
+              for (var i=0; i<10; i++) {
+                if(response.response.docs[0] !== undefined){
+
+                  $newClipping.text(response.response.docs[i].headline.main)
+                    .css("font-size", "2.5rem")
+                    .css("font-weight", "bold");
+
+                  var $leadDiv = $("<div>")
+                    .text(response.response.docs[i].lead_paragraph)
+                    .css("font-size", "2rem")
+                    .css("font-weight", "normal")
+                    .css("margin", "2rem 0 2rem 0");
+                  $newClipping.append($leadDiv);
+
+                  var $yearDiv = $("<div>")
+                    .text("DATE: " + response.response.docs[i].pub_date.substring(5,7) + "/" + response.response.docs[i].pub_date.substring(8,10) + "/" + response.response.docs[i].pub_date.substring(0,4))
+                    .css("font-size", "1.5rem")
+                    .css("font-weight", "lighter");
+                  $newClipping.append($yearDiv);
+
+                  var $webDiv = $("<div>");
+                  $newClipping.append($webDiv);
+                  var $webAnchor = $("<a>")
+                    .attr("href",response.response.docs[i].web_url)
+                    .text("Click here for original article")
+                    .css("font-size", "1.5rem");
+                  $webDiv.append($webAnchor);
+                  break;
+                }
+              }
+              $newClipping.text("No results!");
+          });
+
+        });
+
+        // remove all items
+        
+        $remove.on("click", function(event){
+          var $holder = $(".holder");
+          var $clipping = $("img");
+          $holder.remove();
+          $clipping.remove();
+
+        });
+
+      });
+
+</script>
+</body>
+</html>
