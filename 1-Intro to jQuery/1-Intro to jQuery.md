@@ -12,25 +12,37 @@ Katie Krieger
 * `$` is an alias for the `jQuery` function. In order to use jQuery methods, we must wrap elements or node lists in the jQuery function.
 * To wait for the DOM to load:
 
-		$(function() {
-		    // code here
-		});
+	```js
+	$(function() {
+	    // code here
+	});
+	```
 * To select the `footer` element:
 
-		$('footer');
+	```js
+	$('footer');
+	```
 
 * To select the `div` with an `id` of "container":
 
-		$('#container');
+	```js
+	$('#container');
+	```
 * To select all of the `li`s inside of the `ul` with a class of `nav`:
 
-		$('.nav li');
+	```js
+	$('.nav li');
+	```
 * To select the third `li` inside of the `div` with a class of `list-container`:
 
-		$('.list-container li:nth-child(3)');
+	```js
+	$('.list-container li:nth-child(3)');
+	```
 * To select only the last `li` in each of the `ul`s:
 
-		$('ul li:last-child');
+	```js
+	$('ul li:last-child');
+	```
 
 
 [jQuery Exercises](https://www.rithmschool.com/courses/intermediate-javascript-part-2/jquery-exercises)

@@ -10,19 +10,23 @@ Katie Krieger
 4. `AJAX` is Asynchronous JavaScript and XML, a set of technologies that allow for building single-page apps. The XHR object in JavaScript allows asynchronous JavaScript and XML.
 5. See below:
 
-		var XHR = new XMLHttpRequest();
-		XHR.onreadystatechange = function() {
-		    if (XHR.readyState == 4 && XHR.status == 200) {
-		      console.log(JSON.parse(XHR.responseText))
-		    }
-		};
-		XHR.open("GET", "https://omdbapi.com?t=there will be blood");
-		XHR.send();
+	```js
+	var XHR = new XMLHttpRequest();
+	XHR.onreadystatechange = function() {
+	    if (XHR.readyState == 4 && XHR.status == 200) {
+	      console.log(JSON.parse(XHR.responseText))
+	    }
+	};
+	XHR.open("GET", "https://omdbapi.com?t=there will be blood");
+	XHR.send();
+	```
 		
 6. See below:
 
-		fetch('https://omdbapi.com?t=there will be blood').then(function(response){
-		    return response.json().then(function(data){
-		        console.log(data);
-		    });
-		});
+	```js
+	fetch('https://omdbapi.com?t=there will be blood').then(function(response){
+	    return response.json().then(function(data){
+	        console.log(data);
+	    });
+	});
+	```
