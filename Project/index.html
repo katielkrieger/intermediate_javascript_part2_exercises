@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>NYT History</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet" integrity="sha384-HzUaiJdCTIY/RL2vDPRGdEQHHahjzwoJJzGUkYjHVzTwXFQ2QN/nVgX7tzoMW3Ov" crossorigin="anonymous">
+  <script src="http://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="http://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css" rel="stylesheet" integrity="sha384-HzUaiJdCTIY/RL2vDPRGdEQHHahjzwoJJzGUkYjHVzTwXFQ2QN/nVgX7tzoMW3Ov" crossorigin="anonymous">
   <style>
     .top {
       background-color: #E0EAFF;
@@ -14,34 +16,39 @@
     .clipping {
       margin-top: 4rem;
     }
+    div {
+      margin-top: 1rem;
+    }
+    .col-xs-6 {
+      padding-bottom: 2rem;
+    }
 
   </style>
 </head>
 <body>
-    <section class="top">
+    <section class="top container">
       <h1 class="header text-center">Looking back through the New York Times</h1>
       <h2 class="header text-center">What was the first thing written about _________ ?</h2>
-      <article class="container">
-        <div class="row">
-          <form class="form" action="#">
-            <div class="form-group">
-              <label class="sr-only" for="title">Search Item</label>
-              <div class="col-xs-12 col-sm-4 col-sm-offset-2">
-                <input type="text" class="form-control" id="search" placeholder="Ex: Yosemite, Barack Obama, or the Titanic...">
-              </div>
-              <div class="col-xs-12 col-sm-2">
-                <button type="submit" class="btn btn-primary search" value="headlines">Search NYT headlines
-                </button>
-              </div>
-              <div class="col-xs-12 col-sm-2">
-                <button type="submit" class="btn btn-default search" value="all">Search all of the NYT
-                </button>
-              </div>
+    </section>
+    <section class="top container">
+      <div class="row">
+        <form class="form" action="#">
+          <div class="form-group">
+            <label class="sr-only" for="title">Search Item</label>
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+              <input type="text" class="form-control" id="search" placeholder="Ex: Yosemite, Obama, or the Titanic...">
             </div>
-          </form>
-        </div>
-      </article>
-      <hr>
+            <div class="col-xs-6 text-right">
+              <button type="submit" class="btn btn-primary search" value="headlines">Search headlines
+              </button>
+            </div>
+            <div class="col-xs-6 text-left">
+              <button type="submit" class="btn btn-default search" value="all">Search contents
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </section>
     <section class="container">
       <div class="row clipping">
@@ -51,7 +58,7 @@
         </div>
       </div>
     </section>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
     <script>
       $(document).ready(function(){
 
@@ -60,7 +67,6 @@
         var $form = $("form");
         var $buttons = $(".search");
         var $clippings = $(".clippings");
-        var $remove = $(".remove");
 
         $buttons.on("click", function(event){
 
@@ -89,7 +95,7 @@
           }
           
 
-          var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+          var url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
           url += '?' + $.param({
             'api-key': "3baa47a8549145ffb79ca653ab42a969",
             'fq': fq,
@@ -113,6 +119,7 @@
               var $newBold = $("<b>");
 
               for (var i=0; i<10; i++) {
+                $newClipping.text("No results!");
                 if(response.response.docs[0] !== undefined){
 
                   $newClipping.text(response.response.docs[i].headline.main)
@@ -132,7 +139,8 @@
                     .css("font-weight", "lighter");
                   $newClipping.append($yearDiv);
 
-                  var $webDiv = $("<div>");
+                  var $webDiv = $("<div>")
+                    .css("margin-bottom", "1.5rem");
                   $newClipping.append($webDiv);
                   var $webAnchor = $("<a>")
                     .attr("href",response.response.docs[i].web_url)
@@ -142,18 +150,7 @@
                   break;
                 }
               }
-              $newClipping.text("No results!");
           });
-
-        });
-
-        // remove all items
-        
-        $remove.on("click", function(event){
-          var $holder = $(".holder");
-          var $clipping = $("img");
-          $holder.remove();
-          $clipping.remove();
 
         });
 
