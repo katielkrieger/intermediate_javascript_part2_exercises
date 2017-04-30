@@ -31,9 +31,15 @@
         <table class="table table-bordered col-xs-12">
           <thead>
               <tr>
-                  <th class="col-xs-8 text-center">Title</th>
-                  <th class="col-xs-2 text-center">Rating</th>
-                  <th class="col-xs-2 text-center">Delete</th>
+                <th class="col-xs-2 text-center">Title
+                  <span class= "glyphicon glyphicon-chevron-up title-AtoZ"></span>
+                  <span class= "glyphicon glyphicon-chevron-down title-ZToA"></span>
+                </th>
+                <th class="col-xs-2 text-center">Rating
+                  <span class= "glyphicon glyphicon-chevron-up rating-highLow"></span>
+                  <span class= "glyphicon glyphicon-chevron-down rating-lowHigh"></span>
+                </th>
+                <th class="col-xs-2 text-center">Delete</th>
               </tr>
           </thead>
           <tbody>
@@ -53,6 +59,8 @@
         var $tbody = $("tbody");
 
         if(Object.keys(listObj).length > 0) {
+
+          titleRatingObj = {};
 
           var counter = oldCounter;
           for (key in listObj) {
@@ -83,13 +91,14 @@
           
         } else {
           listObj = {};
+          titleRatingObj = {};
           var counter = -1;
         }
 
         // add a new item
 
 
-        var counter = 0;
+        var counter = counter || 0;
 
 
         $form.on("submit", function(event){
@@ -125,7 +134,7 @@
               title: $("#title").val(),
               rating: $("#rating").val()
             };
-            
+
             localStorage.setItem("currentList", JSON.stringify(listObj));
             localStorage.setItem("maxCount", counter);
             $form.trigger("reset");
@@ -140,6 +149,184 @@
           delete listObj[$id];
           localStorage.setItem("currentList", JSON.stringify(listObj));
         });
+
+        // sort by title A to Z
+
+        var $titleAToZ = $(".title-AtoZ");
+
+        $titleAToZ.on("click", function(event){
+          
+            var $titles = $("tr td:first-child");
+            var $ratings = $("tr td:nth-child(2)");
+            var $deletes = $("tr td:nth-child(3)");
+
+            var titlesArray = [];
+            var ratingsArray = [];
+            var idArray = [];
+            for (var k=0; k < $titles.length; k++) {
+              titlesArray.push($titles[k].textContent);
+              ratingsArray.push($ratings[k].textContent);
+              idArray.push($titles.eq(k).attr("ID"));
+            }
+
+            var newTitlesArray = titlesArray.slice();
+            newTitlesArray.sort();
+
+            var newIdArray = [];
+            var newRatingsArray = [];
+
+            for (var l=0; l<titlesArray.length; l++) {
+              newIdArray.push(idArray[titlesArray.indexOf(newTitlesArray[l])]);
+              newRatingsArray.push(ratingsArray[titlesArray.indexOf(newTitlesArray[l])]);
+            }
+
+            for (var n=0; n<titlesArray.length; n++) {
+              $titles.eq(n).text(newTitlesArray[n])
+                            .attr("ID", newIdArray[n]);
+              $ratings.eq(n).text(newRatingsArray[n])
+                            .attr("ID", newIdArray[n]);
+              $deletes.eq(n).attr("ID", newIdArray[n]);
+            }
+            
+            // localStorage.setItem("currentList", JSON.stringify(listObj));
+
+        });
+
+        // sort by title Z to A
+
+        var $titleZToA = $(".title-ZToA");
+
+        $titleZToA.on("click", function(event){
+          
+            var $titles = $("tr td:first-child");
+            var $ratings = $("tr td:nth-child(2)");
+            var $deletes = $("tr td:nth-child(3)");
+
+            var titlesArray = [];
+            var ratingsArray = [];
+            var idArray = [];
+            for (var k=0; k < $titles.length; k++) {
+              titlesArray.push($titles[k].textContent);
+              ratingsArray.push($ratings[k].textContent);
+              idArray.push($titles.eq(k).attr("ID"));
+            }
+
+            var newTitlesArray = titlesArray.slice();
+            newTitlesArray.sort().reverse();
+
+            var newIdArray = [];
+            var newRatingsArray = [];
+
+            for (var l=0; l<titlesArray.length; l++) {
+              newIdArray.push(idArray[titlesArray.indexOf(newTitlesArray[l])]);
+              newRatingsArray.push(ratingsArray[titlesArray.indexOf(newTitlesArray[l])]);
+            }
+
+            for (var n=0; n<titlesArray.length; n++) {
+              $titles.eq(n).text(newTitlesArray[n])
+                            .attr("ID", newIdArray[n]);
+              $ratings.eq(n).text(newRatingsArray[n])
+                            .attr("ID", newIdArray[n]);
+              $deletes.eq(n).attr("ID", newIdArray[n]);
+            }
+            
+            // localStorage.setItem("currentList", JSON.stringify(listObj));
+
+        });
+
+
+        // rating high to low
+
+        var $ratingHighToLow = $(".rating-highLow");
+
+        function sortNumber(a,b) {
+            return a - b;
+        }
+
+        $ratingHighToLow.on("click", function(event){
+          
+            var $titles = $("tr td:first-child");
+            var $ratings = $("tr td:nth-child(2)");
+            var $deletes = $("tr td:nth-child(3)");
+
+            var titlesArray = [];
+            var ratingsArray = [];
+            var idArray = [];
+            for (var k=0; k < $titles.length; k++) {
+              titlesArray.push($titles[k].textContent);
+              ratingsArray.push($ratings[k].textContent);
+              idArray.push($titles.eq(k).attr("ID"));
+            }
+
+            var newRatingsArray = ratingsArray.slice();
+            newRatingsArray.sort(sortNumber).reverse();
+
+            var newIdArray = [];
+            var newTitlesArray = [];
+
+            for (var l=0; l<titlesArray.length; l++) {
+              newIdArray.push(idArray[ratingsArray.indexOf(newRatingsArray[l])]);
+              newTitlesArray.push(titlesArray[ratingsArray.indexOf(newRatingsArray[l])]);
+            }
+
+            for (var n=0; n<titlesArray.length; n++) {
+              $titles.eq(n).text(newTitlesArray[n])
+                            .attr("ID", newIdArray[n]);
+              $ratings.eq(n).text(newRatingsArray[n])
+                            .attr("ID", newIdArray[n]);
+              $deletes.eq(n).attr("ID", newIdArray[n]);
+            }
+            
+            // localStorage.setItem("currentList", JSON.stringify(listObj));
+
+        });
+
+        // rating low to high
+
+        var $ratingLowToHigh = $(".rating-lowHigh");
+
+        function sortNumber(a,b) {
+            return a - b;
+        }
+
+        $ratingLowToHigh.on("click", function(event){
+          
+            var $titles = $("tr td:first-child");
+            var $ratings = $("tr td:nth-child(2)");
+            var $deletes = $("tr td:nth-child(3)");
+
+            var titlesArray = [];
+            var ratingsArray = [];
+            var idArray = [];
+            for (var k=0; k < $titles.length; k++) {
+              titlesArray.push($titles[k].textContent);
+              ratingsArray.push($ratings[k].textContent);
+              idArray.push($titles.eq(k).attr("ID"));
+            }
+
+            var newRatingsArray = ratingsArray.slice();
+            newRatingsArray.sort(sortNumber);
+
+            var newIdArray = [];
+            var newTitlesArray = [];
+
+            for (var l=0; l<titlesArray.length; l++) {
+              newIdArray.push(idArray[ratingsArray.indexOf(newRatingsArray[l])]);
+              newTitlesArray.push(titlesArray[ratingsArray.indexOf(newRatingsArray[l])]);
+            }
+
+            for (var n=0; n<titlesArray.length; n++) {
+              $titles.eq(n).text(newTitlesArray[n])
+                            .attr("ID", newIdArray[n]);
+              $ratings.eq(n).text(newRatingsArray[n])
+                            .attr("ID", newIdArray[n]);
+              $deletes.eq(n).attr("ID", newIdArray[n]);
+            }
+            
+            // localStorage.setItem("currentList", JSON.stringify(listObj));
+
+        });
+
 
       });
 </script>
